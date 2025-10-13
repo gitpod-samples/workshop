@@ -1,0 +1,81 @@
+services:
+  database:
+    name: PostgreSQL Database
+    description: PostgreSQL database for portfolio data
+    triggeredBy:
+      - postEnvironmentStart
+    commands:
+      start: |
+        # PostgreSQL should already be running, just initialize it
+        echo "Initializing PostgreSQL database..."
+        
+        # Wait for PostgreSQL to be ready
+        for i in {1..30}; do
+          if pg_isready 2>/dev/null; then
+            echo "PostgreSQL is ready!"
+            break
+          fi
+          echo "Waiting for PostgreSQL... ($i/30)"
+          sleep 1
+        done
+        
+        # Create database if it doesn't exist
+        psql -h localhost -U postgres -c "CREATE DATABASE portfolio_db;" 2>/dev/null || echo "Database already exists"
+        
+        # Initialize database schema
+        cd /workspaces/ona-workshop/backend
+        node init-db.js
+        
+        echo "✅ PostgreSQL initialized successfully"
+        
+        # Keep the service running
+        tail -f /dev/null
+
+  backend:
+    name: Backend API
+    description: Node.js Express API server
+    triggeredBy:
+      - postEnvironmentStart
+    commands:
+      start: |
+        cd /workspaces/ona-workshop/backend
+        
+        # Wait for dependencies to be installed
+        while [ ! -d "node_modules" ]; do
+          echo "Waiting for dependencies to be installed..."
+          sleep 2
+        done
+        
+        echo "Starting backend API..."
+        npm start
+
+  frontend:
+    name: Frontend Dev Server
+    description: React + Vite development server
+    triggeredBy:
+      - postEnvironmentStart
+    commands:
+      start: |
+        cd /workspaces/ona-workshop/frontend
+        
+        # Wait for dependencies to be installed
+        while [ ! -d "node_modules" ]; do
+          echo "Waiting for dependencies to be installed..."
+          sleep 2
+        done
+        
+        echo "Starting frontend dev server..."
+        npm run dev
+
+tasks:
+  install-dependencies:
+    name: Install Dependencies
+    description: Install npm dependencies for backend and frontend
+    triggeredBy:
+      - postEnvironmentStart
+    command: |
+      echo "Installing backend dependencies..."
+      cd /workspaces/ona-workshop/backend && npm install
+      echo "Installing frontend dependencies..."
+      cd /workspaces/ona-workshop/frontend && npm install
+      echo "✅ All dependencies installed"
