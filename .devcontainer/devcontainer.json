@@ -9,6 +9,10 @@
         "dockerfile": "Dockerfile"
     },
 
+	"features": {
+		"./features/postgresql": {}
+	},
+
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -17,6 +21,8 @@
 			]
 		}
 	},
+	"remoteUser": "gitpod",
+	"containerUser": "gitpod",
 	"forwardPorts": [3000, 3001, 5432],
 	"portsAttributes": {
 		"3000": {
