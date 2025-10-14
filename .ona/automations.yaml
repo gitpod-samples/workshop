@@ -27,18 +27,8 @@ services:
         psql -h localhost -U postgres -c "CREATE DATABASE portfolio_db;" 2>/dev/null || echo "Database already exists"
         
         # Wait for dependencies to be installed before initializing schema
-        echo "Waiting for dependencies to be installed..."
-        timeout=300
-        elapsed=0
-        while [ ! -f /tmp/dependencies-installed ] && [ $elapsed -lt $timeout ]; do
-          sleep 2
-          elapsed=$((elapsed + 2))
-        done
-        
-        if [ ! -f /tmp/dependencies-installed ]; then
-          echo "❌ Timeout waiting for dependencies"
-          exit 1
-        fi
+        echo "Waiting for dependencies..."
+        timeout 300 bash -c 'until [ -f /tmp/dependencies-installed ]; do sleep 2; done' || exit 1
         
         # Initialize database schema
         cd /workspaces/workshop/backend
@@ -68,18 +58,8 @@ services:
         cd /workspaces/workshop/backend
         
         # Wait for dependencies to be installed
-        echo "Waiting for dependencies to be installed..."
-        timeout=300
-        elapsed=0
-        while [ ! -f /tmp/dependencies-installed ] && [ $elapsed -lt $timeout ]; do
-          sleep 2
-          elapsed=$((elapsed + 2))
-        done
-        
-        if [ ! -f /tmp/dependencies-installed ]; then
-          echo "❌ Timeout waiting for dependencies"
-          exit 1
-        fi
+        echo "Waiting for dependencies..."
+        timeout 300 bash -c 'until [ -f /tmp/dependencies-installed ]; do sleep 2; done' || exit 1
         
         echo "Starting backend API..."
         npm start
@@ -102,18 +82,8 @@ services:
         cd /workspaces/workshop/frontend
         
         # Wait for dependencies to be installed
-        echo "Waiting for dependencies to be installed..."
-        timeout=300
-        elapsed=0
-        while [ ! -f /tmp/dependencies-installed ] && [ $elapsed -lt $timeout ]; do
-          sleep 2
-          elapsed=$((elapsed + 2))
-        done
-        
-        if [ ! -f /tmp/dependencies-installed ]; then
-          echo "❌ Timeout waiting for dependencies"
-          exit 1
-        fi
+        echo "Waiting for dependencies..."
+        timeout 300 bash -c 'until [ -f /tmp/dependencies-installed ]; do sleep 2; done' || exit 1
         
         echo "Starting frontend dev server..."
         npm run dev
