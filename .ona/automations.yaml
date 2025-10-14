@@ -30,6 +30,15 @@ services:
         
         # Keep the service running
         tail -f /dev/null
+      
+      ready: |
+        # Check if PostgreSQL is accepting connections
+        pg_isready -q
+      
+      stop: |
+        # Stop PostgreSQL service
+        sudo service postgresql stop || true
+        echo "PostgreSQL stopped"
 
   backend:
     name: Backend API
@@ -48,6 +57,14 @@ services:
         
         echo "Starting backend API..."
         npm start
+      
+      ready: |
+        # Check if backend API is responding
+        curl -f -s http://localhost:3001/api/health > /dev/null
+      
+      stop: |
+        # Stop backend API (npm start runs in foreground, will be killed by automation)
+        echo "Backend API stopped"
 
   frontend:
     name: Frontend Dev Server
@@ -66,6 +83,14 @@ services:
         
         echo "Starting frontend dev server..."
         npm run dev
+      
+      ready: |
+        # Check if frontend dev server is responding
+        curl -f -s http://localhost:3000 > /dev/null
+      
+      stop: |
+        # Stop frontend dev server (npm run dev runs in foreground, will be killed by automation)
+        echo "Frontend dev server stopped"
 
 tasks:
   install-dependencies:
@@ -73,6 +98,7 @@ tasks:
     description: Install npm dependencies for backend and frontend
     triggeredBy:
       - postEnvironmentStart
+      - manual
     command: |
       echo "Installing backend dependencies..."
       cd /workspaces/ona-workshop/backend && npm install
