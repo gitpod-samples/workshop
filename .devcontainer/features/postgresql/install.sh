@@ -13,42 +13,26 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-# Install system dependencies
 export DEBIAN_FRONTEND=noninteractive
-apt-get update
-apt-get install -y --no-install-recommends \
-    locales \
-    tzdata \
-    sudo
 
-# Install library dependencies from local .deb files
+# Install all .deb packages in correct order
+# Dependencies first, then PostgreSQL packages
 echo "Installing library dependencies..."
 dpkg -i "${FEATURE_DIR}"/libicu70*.deb 2>&1 || true
 dpkg -i "${FEATURE_DIR}"/liblz4*.deb 2>&1 || true
 dpkg -i "${FEATURE_DIR}"/libzstd*.deb 2>&1 || true
 dpkg -i "${FEATURE_DIR}"/libldap*.deb 2>&1 || true
 dpkg -i "${FEATURE_DIR}"/libllvm*.deb 2>&1 || true
-dpkg -i "${FEATURE_DIR}"/ssl-cert*.deb 2>&1 || true
 dpkg -i "${FEATURE_DIR}"/libpq5*.deb 2>&1 || true
 dpkg -i "${FEATURE_DIR}"/libjson-perl*.deb 2>&1 || true
 
-# Fix any dependency issues
-apt-get install -f -y
-
-# Install PostgreSQL packages in correct order
 echo "Installing PostgreSQL common packages..."
 dpkg -i "${FEATURE_DIR}"/postgresql-client-common*.deb 2>&1 || true
 dpkg -i "${FEATURE_DIR}"/postgresql-common*.deb 2>&1 || true
 dpkg -i "${FEATURE_DIR}"/postgresql-client-16*.deb 2>&1 || true
 
-# Fix any dependency issues
-apt-get install -f -y
-
 echo "Installing PostgreSQL 16 server..."
 dpkg -i "${FEATURE_DIR}"/postgresql-16_*.deb 2>&1 || true
-
-# Fix any remaining dependency issues
-apt-get install -f -y
 
 # Verify postgres user was created
 if ! id postgres >/dev/null 2>&1; then
@@ -112,9 +96,5 @@ PGDATA=/var/lib/postgresql/data
 PGHOST=localhost
 PGUSER=postgres
 EOF
-
-# Clean up
-apt-get clean
-rm -rf /var/lib/apt/lists/*
 
 echo "PostgreSQL 16 installed successfully!"
