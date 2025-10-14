@@ -7,7 +7,8 @@ function HoldingsTable({ holdings }) {
   }
 
   const formatPercent = (value) => {
-    return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`
+    const num = parseFloat(value)
+    return `${num >= 0 ? '+' : ''}${num.toFixed(2)}%`
   }
 
   if (holdings.length === 0) {
