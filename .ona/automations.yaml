@@ -52,13 +52,6 @@ services:
     commands:
       start: |
         cd /workspaces/workshop/backend
-        
-        # Wait for dependencies to be installed
-        while [ ! -d "node_modules" ]; do
-          echo "Waiting for dependencies to be installed..."
-          sleep 2
-        done
-        
         echo "Starting backend API..."
         npm start
       
@@ -78,13 +71,6 @@ services:
     commands:
       start: |
         cd /workspaces/workshop/frontend
-        
-        # Wait for dependencies to be installed
-        while [ ! -d "node_modules" ]; do
-          echo "Waiting for dependencies to be installed..."
-          sleep 2
-        done
-        
         echo "Starting frontend dev server..."
         npm run dev
       
@@ -101,7 +87,7 @@ tasks:
     name: Install Dependencies
     description: Install npm dependencies for backend and frontend
     triggeredBy:
-      - postEnvironmentStart
+      - postDevcontainerStart
       - manual
     command: |
       echo "Installing backend dependencies..."
