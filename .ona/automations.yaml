@@ -6,8 +6,16 @@ services:
       - postEnvironmentStart
     commands:
       start: |
-        # PostgreSQL should already be running, just initialize it
-        echo "Initializing PostgreSQL database..."
+        echo "Starting PostgreSQL database..."
+        
+        # Ensure PostgreSQL runtime directory exists
+        sudo mkdir -p /var/run/postgresql
+        sudo chown postgres:postgres /var/run/postgresql
+        
+        # Start PostgreSQL if not already running
+        if ! pg_isready 2>/dev/null; then
+          sudo service postgresql start
+        fi
         
         # Wait for PostgreSQL to be ready
         for i in {1..30}; do
