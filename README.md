@@ -2,41 +2,9 @@
 
 A full-stack finance/equity application for learning Gitpod and dev containers.
 
-## 🚀 Quick Start
-
-### Option 1: Open in Gitpod (Recommended)
-
-Click the button below or prefix the repository URL with `gitpod.io/#`:
-
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/meysholdt/ona-workshop)
-
-The workspace will automatically:
-- Build the dev container with Node.js
-- Add PostgreSQL via Dev Container feature
-- Install all dependencies via Ona automations
-- Initialize the database with sample data
-- Start the backend API on port 3001 (gracefully handles DB unavailability)
-- Start the frontend on port 3000 (displays helpful error messages)
-
-### Option 2: Local Development
-
-1. Ensure you have Docker and VS Code with the Dev Containers extension installed
-2. Clone the repository:
-   ```bash
-   git clone https://github.com/meysholdt/ona-workshop.git
-   cd workshop
-   ```
-3. Open in VS Code and reopen in container when prompted
-4. Services will start automatically
-
 ## 📚 Workshop Guide
 
 Follow the comprehensive workshop guide in [WORKSHOP.md](./WORKSHOP.md) to learn:
-
-1. **Exercise 1:** Open and explore the development environment
-2. **Exercise 2:** Make code changes and see live updates
-3. **Exercise 3:** Connect via SSH CLI
-4. **Exercise 4:** Customize the dev container
 
 ## 🏗️ Architecture
 
@@ -76,32 +44,6 @@ workshop/
 - **Performance Metrics:** View gain/loss, returns, and portfolio value
 - **Transaction History:** Complete audit trail of all trades
 - **Responsive Design:** Works on desktop and mobile devices
-
-## 🛠️ Manual Setup
-
-Services are managed by Ona automations. To start them:
-
-```bash
-# Load automations configuration
-gitpod automations update .ona/automations.yaml
-
-# Install dependencies
-gitpod automations task start install-dependencies
-
-# Start services
-gitpod automations service start database
-gitpod automations service start backend
-gitpod automations service start frontend
-
-# Check status
-gitpod automations service list
-
-# View logs
-gitpod automations service logs backend
-gitpod automations service logs frontend
-```
-
-**Note:** The database service requires a container rebuild to configure PostgreSQL authentication properly. Until then, the app demonstrates graceful failure handling - the backend and frontend run normally and display helpful error messages about the database being unavailable.
 
 ## 🔧 Useful Commands
 
