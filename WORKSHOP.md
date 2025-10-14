@@ -69,7 +69,7 @@ Portfolio Manager is a finance/equity application that allows users to:
    ```bash
    pwd
    ```
-   You should see: `/workspaces/ona-workshop`
+   You should see: `/workspaces/workshop`
 
 #### 1.4 Open in VS Code Web
 
@@ -265,7 +265,7 @@ Portfolio Manager is a finance/equity application that allows users to:
    ```bash
    gitpod environment list
    ```
-2. Find your `ona-workshop` workspace in the list
+2. Find your `workshop` workspace in the list
 3. Note the workspace ID (it will look like: `username-onworkshop-xxxxx`)
 
 #### 3.4 Connect via SSH
@@ -289,7 +289,7 @@ Portfolio Manager is a finance/equity application that allows users to:
    ```bash
    pwd
    ```
-   Output: `/workspaces/ona-workshop`
+   Output: `/workspaces/workshop`
 
 2. List running processes:
    ```bash
@@ -647,7 +647,7 @@ Reset the database:
 sudo -u postgres psql -c "DROP DATABASE portfolio_db;"
 sudo -u postgres psql -c "CREATE DATABASE portfolio_db;"
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE portfolio_db TO portfolio_user;"
-cd /workspaces/ona-workshop/backend
+cd /workspaces/workshop/backend
 node init-db.js
 ```
 

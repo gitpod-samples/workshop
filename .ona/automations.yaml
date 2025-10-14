@@ -27,7 +27,7 @@ services:
         psql -h localhost -U postgres -c "CREATE DATABASE portfolio_db;" 2>/dev/null || echo "Database already exists"
         
         # Initialize database schema
-        cd /workspaces/ona-workshop/backend
+        cd /workspaces/workshop/backend
         node init-db.js
         
         echo "✅ PostgreSQL initialized successfully"
@@ -51,7 +51,7 @@ services:
       - postEnvironmentStart
     commands:
       start: |
-        cd /workspaces/ona-workshop/backend
+        cd /workspaces/workshop/backend
         
         # Wait for dependencies to be installed
         while [ ! -d "node_modules" ]; do
@@ -77,7 +77,7 @@ services:
       - postEnvironmentStart
     commands:
       start: |
-        cd /workspaces/ona-workshop/frontend
+        cd /workspaces/workshop/frontend
         
         # Wait for dependencies to be installed
         while [ ! -d "node_modules" ]; do
@@ -105,7 +105,7 @@ tasks:
       - manual
     command: |
       echo "Installing backend dependencies..."
-      cd /workspaces/ona-workshop/backend && npm install
+      cd /workspaces/workshop/backend && npm install
       echo "Installing frontend dependencies..."
-      cd /workspaces/ona-workshop/frontend && npm install
+      cd /workspaces/workshop/frontend && npm install
       echo "✅ All dependencies installed"

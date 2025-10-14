@@ -24,7 +24,7 @@ The workspace will automatically:
 2. Clone the repository:
    ```bash
    git clone https://github.com/meysholdt/ona-workshop.git
-   cd ona-workshop
+   cd workshop
    ```
 3. Open in VS Code and reopen in container when prompted
 4. Services will start automatically
@@ -47,7 +47,7 @@ Follow the comprehensive workshop guide in [WORKSHOP.md](./WORKSHOP.md) to learn
 ## 📁 Project Structure
 
 ```
-ona-workshop/
+workshop/
 ├── .devcontainer/
 │   ├── devcontainer.json    # Dev container configuration
 │   └── Dockerfile            # Container image definition
