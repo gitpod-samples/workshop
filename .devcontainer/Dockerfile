@@ -2,13 +2,10 @@ FROM gitpod/workspace-full
 
 # Node.js and common tools are already included in the base image
 
-# Install additional tools
-RUN sudo apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && sudo apt-get -y install --no-install-recommends \
-        jq \
-        htop \
-    && sudo apt-get clean -y \
-    && sudo rm -rf /var/lib/apt/lists/*
-
-# Download and install a tool from GitHub (example: lazydocker)
-RUN curl -fsSL https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
+# Install GitHub CLI from GitHub releases
+RUN curl -fsSL https://github.com/cli/cli/releases/download/v2.81.0/gh_2.81.0_linux_amd64.tar.gz -o /tmp/gh.tar.gz \
+    && cd /tmp \
+    && tar -xzf gh.tar.gz \
+    && sudo mv gh_2.81.0_linux_amd64/bin/gh /usr/local/bin/ \
+    && sudo chmod +x /usr/local/bin/gh \
+    && rm -rf /tmp/gh.tar.gz /tmp/gh_2.81.0_linux_amd64
