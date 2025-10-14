@@ -87,6 +87,12 @@ if id postgres >/dev/null 2>&1; then
     chmod 0750 /var/lib/postgresql/data
 fi
 
+# Create PostgreSQL runtime directory
+mkdir -p /var/run/postgresql
+if id postgres >/dev/null 2>&1; then
+    chown postgres:postgres /var/run/postgresql
+fi
+
 # Note: Database initialization will be done at runtime by pg-init.sh
 # We don't initialize here because the data directory might be a volume mount
 
