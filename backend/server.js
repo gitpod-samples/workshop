@@ -39,15 +39,15 @@ async function testDatabaseConnection() {
 testDatabaseConnection().catch(() => {
   console.warn('⚠️  Initial database connection failed');
   console.warn('⚠️  API will run in degraded mode without database');
-  console.warn('⚠️  Will retry connection every 5 seconds...');
+  console.warn('⚠️  Will retry connection every 2 seconds...');
 });
 
-// Retry connection every 5 seconds if not connected
+// Retry connection every 2 seconds if not connected
 setInterval(async () => {
   if (!dbConnected) {
     await testDatabaseConnection();
   }
-}, 5000);
+}, 2000);
 
 // Middleware to check database connection
 const checkDbConnection = (req, res, next) => {
