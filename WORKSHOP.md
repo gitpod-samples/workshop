@@ -23,7 +23,7 @@ Portfolio Manager is a finance/equity application that allows users to:
 
 ### Steps:
 
-#### 1.1 Open the Workspace in Gitpod
+#### 1.1 Open the Environment in Ona
 
 1. Navigate to the repository: `https://github.com/gitpod-samples/workshop`
 2. Install the Gitpod browser extension if you haven't already:
@@ -34,7 +34,7 @@ Portfolio Manager is a finance/equity application that allows users to:
    ```
    https://app.gitpod.io/#https://github.com/gitpod-samples/workshop
    ```
-5. Wait for the workspace to initialize. This may take 2-3 minutes on first launch as it:
+5. Wait for the environment to initialize. This may take 2-3 minutes on first launch as it:
    - Builds the dev container
    - Installs Node.js dependencies via Ona automations
    - Starts PostgreSQL service via Ona automations
@@ -58,7 +58,7 @@ Portfolio Manager is a finance/equity application that allows users to:
 1. In the Ona dev env open the "Environment" tab
 2. On the top-right, click on the triangle to get a dropdown of available IDEs and select "VS Code Desktop"
 3. If prompted, install the Ona extension for VS Code Desktop
-4. VS Code Desktop will open with a remote connection to your Gitpod workspace
+4. VS Code Desktop will open with a remote connection to your One Environment
 1. Look for the **Ports** panel in VS Code (usually at the bottom)
    - If not visible, go to `View > Ports` or press `Ctrl+Shift+P` and type "Ports: Focus on Ports View"
 2. You should see three ports listed:
