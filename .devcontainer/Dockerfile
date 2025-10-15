@@ -1,4 +1,5 @@
-FROM gitpod/workspace-full
+ARG WORKSPACE_FULL_IMAGE=gitpod/workspace-full
+FROM ${WORKSPACE_FULL_IMAGE}
 
 # Node.js and common tools are already included in the base image
 

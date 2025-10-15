@@ -6,7 +6,10 @@
 	"name": "Portfolio Manager Workshop",
 	"build": {
         "context": ".",
-        "dockerfile": "Dockerfile"
+        "dockerfile": "Dockerfile",
+        "args": {
+            "WORKSPACE_FULL_IMAGE": "${localEnv:WORKSPACE_FULL_IMAGE:gitpod/workspace-full}"
+        }
     },
 
 	// "features": {
