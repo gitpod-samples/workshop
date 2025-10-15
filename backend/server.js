@@ -17,17 +17,37 @@ const pool = new Pool({
 // Track database connection status
 let dbConnected = false;
 
-// Test database connection
-pool.query('SELECT NOW()')
-  .then(() => {
-    dbConnected = true;
-    console.log('✅ Database connected successfully');
-  })
-  .catch((err) => {
+// Test database connection with retry logic
+async function testDatabaseConnection() {
+  try {
+    await pool.query('SELECT NOW()');
+    if (!dbConnected) {
+      dbConnected = true;
+      console.log('✅ Database connected successfully');
+    }
+    return true;
+  } catch (err) {
+    if (dbConnected) {
+      console.warn('⚠️  Database connection lost');
+    }
     dbConnected = false;
-    console.warn('⚠️  Database connection failed:', err.message);
-    console.warn('⚠️  API will run in degraded mode without database');
-  });
+    return false;
+  }
+}
+
+// Initial connection attempt
+testDatabaseConnection().catch(() => {
+  console.warn('⚠️  Initial database connection failed');
+  console.warn('⚠️  API will run in degraded mode without database');
+  console.warn('⚠️  Will retry connection every 5 seconds...');
+});
+
+// Retry connection every 5 seconds if not connected
+setInterval(async () => {
+  if (!dbConnected) {
+    await testDatabaseConnection();
+  }
+}, 5000);
 
 // Middleware to check database connection
 const checkDbConnection = (req, res, next) => {
