@@ -25,7 +25,7 @@ Portfolio Manager is a finance/equity application that allows users to:
 
 #### 1.1 Open the Environment in Ona
 
-1. Open an environment for the `https://github.com/gitpod-samples/workshop` repo by: Navigating to `projects`in the nav bar, then opening an environment for the `ona workshop`project
+1. Open an environment for the `https://github.com/gitpod-samples/workshop` repo by: Navigating to `projects` in the nav bar, then opening an environment for the `ona workshop` project
 2. Wait for the environment to initialize. This may take 2-3 minutes on first launch as it:
    - Builds the dev container
    - Installs Node.js dependencies via Ona automations
