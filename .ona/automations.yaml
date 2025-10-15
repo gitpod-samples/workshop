@@ -3,7 +3,7 @@ services:
     name: PostgreSQL Database
     description: PostgreSQL database for portfolio data
     triggeredBy:
-      - postEnvironmentStart
+      - postDevcontainerStart
     commands:
       start: |
         echo "Starting PostgreSQL database..."
