@@ -25,16 +25,8 @@ Portfolio Manager is a finance/equity application that allows users to:
 
 #### 1.1 Open the Environment in Ona
 
-1. Navigate to the repository: `https://github.com/gitpod-samples/workshop`
-2. Install the Gitpod browser extension if you haven't already:
-   - Chrome/Edge: [Gitpod Extension](https://chrome.google.com/webstore/detail/gitpod/dodmmooeoklaejobgleioelladacbeki)
-   - Firefox: [Gitpod Extension](https://addons.mozilla.org/en-US/firefox/addon/gitpod/)
-3. Click the **Open** button that appears on the repository page, or
-4. Alternatively, prefix the repository URL with `app.gitpod.io/#` in your browser:
-   ```
-   https://app.gitpod.io/#https://github.com/gitpod-samples/workshop
-   ```
-5. Wait for the environment to initialize. This may take 2-3 minutes on first launch as it:
+1. Open an environment for the `https://github.com/gitpod-samples/workshop` repo by: Navigating to `projects`in the nav bar, then opening an environment for the `ona workshop`project
+2. Wait for the environment to initialize. This may take 2-3 minutes on first launch as it:
    - Builds the dev container
    - Installs Node.js dependencies via Ona automations
    - Starts PostgreSQL service via Ona automations
