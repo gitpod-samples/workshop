@@ -3,8 +3,5 @@
   "version": "1.0.0",
   "name": "PostgreSQL (Offline)",
   "description": "Installs PostgreSQL 16 from local .deb packages for offline environments",
-  "options": {},
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/common-utils"
-  ]
+  "options": {}
 }
