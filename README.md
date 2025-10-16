@@ -8,9 +8,9 @@ Follow the comprehensive workshop guide in [WORKSHOP.md](./WORKSHOP.md) to learn
 
 ## 🏗️ Architecture
 
-- **Frontend:** React + Vite (Port 3000) - Gracefully handles backend/DB errors
-- **Backend:** Node.js + Express (Port 3001) - Fails gracefully without DB
-- **Database:** PostgreSQL (Port 5432) - Added via Dev Container feature
+- **Frontend:** React + Vite (Port 3000)
+- **Backend:** Node.js + Express (Port 3001)
+- **Database:** SQLite (better-sqlite3) - Embedded database stored in `backend/portfolio.db`
 
 ## 📁 Project Structure
 
@@ -52,14 +52,17 @@ workshop/
 gitpod automations service list
 gitpod automations task list-executions
 
-# Connect to database
-psql -U portfolio_user -d portfolio_db
+# Initialize/reset database
+cd backend && node init-db.js
 
 # Check running services
 ps aux | grep node
 
 # Test API
 curl http://localhost:3001/api/health
+
+# View database file
+ls -lh backend/portfolio.db
 ```
 
 ## 📖 API Endpoints

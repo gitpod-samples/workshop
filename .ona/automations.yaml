@@ -1,53 +1,4 @@
 services:
-  database:
-    name: PostgreSQL Database
-    description: PostgreSQL database for portfolio data
-    triggeredBy:
-      - postDevcontainerStart
-    commands:
-      start: |
-        echo "Starting PostgreSQL database..."
-        
-        # Start PostgreSQL if not already running
-        if ! pg_isready 2>/dev/null; then
-          sudo service postgresql start
-        fi
-        
-        # Wait for PostgreSQL to be ready
-        for i in {1..30}; do
-          if pg_isready 2>/dev/null; then
-            echo "PostgreSQL is ready!"
-            break
-          fi
-          echo "Waiting for PostgreSQL... ($i/30)"
-          sleep 1
-        done
-        
-        # Create database if it doesn't exist
-        psql -h localhost -U postgres -c "CREATE DATABASE portfolio_db;" 2>/dev/null || echo "Database already exists"
-        
-        # Wait for dependencies to be installed before initializing schema
-        echo "Waiting for dependencies..."
-        timeout 300 bash -c 'until [ -f /tmp/dependencies-installed ]; do sleep 2; done' || exit 1
-        
-        # Initialize database schema
-        cd /workspaces/workshop/backend
-        node init-db.js
-        
-        echo "✅ PostgreSQL initialized successfully"
-        
-        # Keep the service running
-        tail -f /dev/null
-      
-      ready: |
-        # Check if PostgreSQL is accepting connections
-        pg_isready -q
-      
-      stop: |
-        # Stop PostgreSQL service
-        sudo service postgresql stop || true
-        echo "PostgreSQL stopped"
-
   backend:
     name: Backend API
     description: Node.js Express API server
@@ -60,6 +11,10 @@ services:
         # Wait for dependencies to be installed
         echo "Waiting for dependencies..."
         timeout 300 bash -c 'until [ -f /tmp/dependencies-installed ]; do sleep 2; done' || exit 1
+        
+        # Initialize SQLite database
+        echo "Initializing SQLite database..."
+        node init-db.js
         
         echo "Starting backend API..."
         npm start
