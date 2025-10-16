@@ -1,20 +1,17 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const Database = require('better-sqlite3');
+const DataStore = require('./data-store');
 const path = require('path');
 
 const app = express();
 const PORT = 3001;
 
-// Database connection
-const dbPath = path.join(__dirname, 'portfolio.db');
-const db = new Database(dbPath);
+// Data store
+const dataPath = path.join(__dirname, 'portfolio.json');
+const store = new DataStore(dataPath);
 
-// Enable foreign keys
-db.pragma('foreign_keys = ON');
-
-console.log('✅ Database connected successfully');
+console.log('✅ Data store initialized');
 
 // Middleware
 app.use(cors());
@@ -31,182 +28,140 @@ app.get('/api/health', (req, res) => {
 
 // Get all portfolios
 app.get('/api/portfolios', (req, res) => {
-  try {
-    const stmt = db.prepare('SELECT * FROM portfolios ORDER BY created_at DESC');
-    const portfolios = stmt.all();
-    res.json(portfolios);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to fetch portfolios' });
-  }
+  const portfolios = store.getAll('portfolios');
+  res.json(portfolios);
 });
 
 // Get portfolio by ID with holdings
 app.get('/api/portfolios/:id', (req, res) => {
-  try {
-    const { id } = req.params;
-    
-    const portfolioStmt = db.prepare('SELECT * FROM portfolios WHERE id = ?');
-    const portfolio = portfolioStmt.get(id);
-    
-    if (!portfolio) {
-      return res.status(404).json({ error: 'Portfolio not found' });
-    }
-    
-    const holdingsStmt = db.prepare(`
-      SELECT h.*, s.symbol, s.name, s.current_price,
-             (h.quantity * s.current_price) as market_value,
-             ((s.current_price - h.average_cost) * h.quantity) as total_gain_loss,
-             (((s.current_price - h.average_cost) / h.average_cost) * 100) as gain_loss_percent
-      FROM holdings h
-      JOIN stocks s ON h.stock_id = s.id
-      WHERE h.portfolio_id = ? AND h.quantity > 0
-      ORDER BY market_value DESC
-    `);
-    const holdings = holdingsStmt.all(id);
-    
-    portfolio.holdings = holdings;
-    
-    // Calculate total portfolio value
-    portfolio.total_value = holdings.reduce((sum, h) => sum + parseFloat(h.market_value), 0);
-    portfolio.total_cost = holdings.reduce((sum, h) => sum + (parseFloat(h.average_cost) * h.quantity), 0);
-    portfolio.total_gain_loss = portfolio.total_value - portfolio.total_cost;
-    portfolio.total_gain_loss_percent = portfolio.total_cost > 0 
-      ? ((portfolio.total_gain_loss / portfolio.total_cost) * 100) 
-      : 0;
-    
-    res.json(portfolio);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to fetch portfolio' });
+  const { id } = req.params;
+  const portfolio = store.getById('portfolios', id);
+  
+  if (!portfolio) {
+    return res.status(404).json({ error: 'Portfolio not found' });
   }
+  
+  // Get holdings for this portfolio
+  const holdings = store.filter('holdings', h => h.portfolio_id == id && h.quantity > 0);
+  
+  // Enrich holdings with stock data and calculations
+  portfolio.holdings = holdings.map(h => {
+    const stock = store.getById('stocks', h.stock_id);
+    const marketValue = h.quantity * stock.current_price;
+    const totalGainLoss = (stock.current_price - h.average_cost) * h.quantity;
+    const gainLossPercent = ((stock.current_price - h.average_cost) / h.average_cost) * 100;
+    
+    return {
+      ...h,
+      symbol: stock.symbol,
+      name: stock.name,
+      current_price: stock.current_price,
+      market_value: marketValue,
+      total_gain_loss: totalGainLoss,
+      gain_loss_percent: gainLossPercent
+    };
+  }).sort((a, b) => b.market_value - a.market_value);
+  
+  // Calculate portfolio totals
+  portfolio.total_value = portfolio.holdings.reduce((sum, h) => sum + h.market_value, 0);
+  portfolio.total_cost = portfolio.holdings.reduce((sum, h) => sum + (h.average_cost * h.quantity), 0);
+  portfolio.total_gain_loss = portfolio.total_value - portfolio.total_cost;
+  portfolio.total_gain_loss_percent = portfolio.total_cost > 0 
+    ? ((portfolio.total_gain_loss / portfolio.total_cost) * 100) 
+    : 0;
+  
+  res.json(portfolio);
 });
 
 // Get all stocks
 app.get('/api/stocks', (req, res) => {
-  try {
-    const stmt = db.prepare('SELECT * FROM stocks ORDER BY symbol');
-    const stocks = stmt.all();
-    res.json(stocks);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to fetch stocks' });
-  }
+  const stocks = store.getAll('stocks').sort((a, b) => a.symbol.localeCompare(b.symbol));
+  res.json(stocks);
 });
 
 // Get transactions for a portfolio
 app.get('/api/portfolios/:id/transactions', (req, res) => {
-  try {
-    const { id } = req.params;
-    const stmt = db.prepare(`
-      SELECT t.*, s.symbol, s.name
-      FROM transactions t
-      JOIN stocks s ON t.stock_id = s.id
-      WHERE t.portfolio_id = ?
-      ORDER BY t.transaction_date DESC
-      LIMIT 50
-    `);
-    const transactions = stmt.all(id);
-    res.json(transactions);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to fetch transactions' });
-  }
+  const { id } = req.params;
+  const transactions = store.filter('transactions', t => t.portfolio_id == id);
+  
+  // Enrich with stock data
+  const enriched = transactions.map(t => {
+    const stock = store.getById('stocks', t.stock_id);
+    return { ...t, symbol: stock.symbol, name: stock.name };
+  }).sort((a, b) => new Date(b.transaction_date) - new Date(a.transaction_date))
+    .slice(0, 50);
+  
+  res.json(enriched);
 });
 
 // Create a transaction (buy or sell)
 app.post('/api/transactions', (req, res) => {
-  const transaction = db.transaction((data) => {
-    const { portfolio_id, stock_id, transaction_type, quantity, price_per_share } = data;
+  try {
+    const { portfolio_id, stock_id, transaction_type, quantity, price_per_share } = req.body;
     
-    // Insert transaction
-    const insertTransaction = db.prepare(`
-      INSERT INTO transactions (portfolio_id, stock_id, transaction_type, quantity, price_per_share)
-      VALUES (?, ?, ?, ?, ?)
-    `);
-    const result = insertTransaction.run(portfolio_id, stock_id, transaction_type, quantity, price_per_share);
+    // Create transaction
+    const transaction = store.add('transactions', {
+      portfolio_id,
+      stock_id,
+      transaction_type,
+      quantity,
+      price_per_share,
+      transaction_date: new Date().toISOString()
+    });
     
     // Update holdings
-    const getHolding = db.prepare(`
-      SELECT * FROM holdings WHERE portfolio_id = ? AND stock_id = ?
-    `);
-    const holding = getHolding.get(portfolio_id, stock_id);
+    const holdings = store.filter('holdings', h => h.portfolio_id == portfolio_id && h.stock_id == stock_id);
+    const holding = holdings[0];
     
     if (transaction_type === 'BUY') {
       if (!holding) {
         // Create new holding
-        const insertHolding = db.prepare(`
-          INSERT INTO holdings (portfolio_id, stock_id, quantity, average_cost)
-          VALUES (?, ?, ?, ?)
-        `);
-        insertHolding.run(portfolio_id, stock_id, quantity, price_per_share);
+        store.add('holdings', {
+          portfolio_id,
+          stock_id,
+          quantity,
+          average_cost: price_per_share
+        });
       } else {
         // Update existing holding
         const newQuantity = holding.quantity + quantity;
         const newAverageCost = ((holding.quantity * holding.average_cost) + (quantity * price_per_share)) / newQuantity;
-        
-        const updateHolding = db.prepare(`
-          UPDATE holdings
-          SET quantity = ?, average_cost = ?
-          WHERE portfolio_id = ? AND stock_id = ?
-        `);
-        updateHolding.run(newQuantity, newAverageCost, portfolio_id, stock_id);
+        store.update('holdings', holding.id, {
+          quantity: newQuantity,
+          average_cost: newAverageCost
+        });
       }
     } else if (transaction_type === 'SELL') {
       if (!holding || holding.quantity < quantity) {
-        throw new Error('Insufficient shares to sell');
+        return res.status(400).json({ error: 'Insufficient shares to sell' });
       }
       
-      const newQuantity = holding.quantity - quantity;
-      
-      const updateHolding = db.prepare(`
-        UPDATE holdings
-        SET quantity = ?
-        WHERE portfolio_id = ? AND stock_id = ?
-      `);
-      updateHolding.run(newQuantity, portfolio_id, stock_id);
+      store.update('holdings', holding.id, {
+        quantity: holding.quantity - quantity
+      });
     }
     
-    return result.lastInsertRowid;
-  });
-  
-  try {
-    const transactionId = transaction(req.body);
-    
-    // Fetch the created transaction
-    const getTransaction = db.prepare('SELECT * FROM transactions WHERE id = ?');
-    const createdTransaction = getTransaction.get(transactionId);
-    
-    res.status(201).json(createdTransaction);
+    res.status(201).json(transaction);
   } catch (err) {
     console.error(err);
-    if (err.message === 'Insufficient shares to sell') {
-      res.status(400).json({ error: err.message });
-    } else {
-      res.status(500).json({ error: 'Failed to create transaction' });
-    }
+    res.status(500).json({ error: 'Failed to create transaction' });
   }
 });
 
-// Update stock price (simulating market data update)
+// Update stock price
 app.put('/api/stocks/:id/price', (req, res) => {
   try {
     const { id } = req.params;
     const { price } = req.body;
     
-    const stmt = db.prepare(`
-      UPDATE stocks
-      SET current_price = ?, updated_at = CURRENT_TIMESTAMP
-      WHERE id = ?
-    `);
-    const result = stmt.run(price, id);
+    const stock = store.update('stocks', id, {
+      current_price: price,
+      updated_at: new Date().toISOString()
+    });
     
-    if (result.changes === 0) {
+    if (!stock) {
       return res.status(404).json({ error: 'Stock not found' });
     }
-    
-    const getStock = db.prepare('SELECT * FROM stocks WHERE id = ?');
-    const stock = getStock.get(id);
     
     res.json(stock);
   } catch (err) {
