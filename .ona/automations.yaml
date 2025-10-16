@@ -65,9 +65,11 @@ tasks:
       - postDevcontainerStart
       - manual
     command: |
-      echo "Installing backend dependencies..."
-      cd /workspaces/workshop/backend && npm install
-      echo "Installing frontend dependencies..."
-      cd /workspaces/workshop/frontend && npm install
-      echo "✅ All dependencies installed"
-      touch /tmp/dependencies-installed
+      bash -l -c '
+        echo "Installing backend dependencies..."
+        cd /workspaces/workshop/backend && npm install
+        echo "Installing frontend dependencies..."
+        cd /workspaces/workshop/frontend && npm install
+        echo "✅ All dependencies installed"
+        touch /tmp/dependencies-installed
+      '
