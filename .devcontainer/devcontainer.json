@@ -9,10 +9,6 @@
         "dockerfile": "Dockerfile"
     },
 
-	// "features": {
-	// 	"./features/postgresql": {}
-	// },
-
 	"customizations": {
 		"vscode": {
 			"extensions": [
