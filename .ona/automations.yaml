@@ -22,31 +22,31 @@ services:
         # Check if backend API is responding
         curl -f -s http://localhost:3001/api/health > /dev/null
       
-  frontend:
-    name: Frontend Dev Server
-    description: React + Vite development server
-    triggeredBy:
-      - postDevcontainerStart
-    commands:
-      start: |
-        cd /workspaces/workshop/frontend
+  # frontend:
+  #   name: Frontend Dev Server
+  #   description: React + Vite development server
+  #   triggeredBy:
+  #     - postDevcontainerStart
+  #   commands:
+  #     start: |
+  #       cd /workspaces/workshop/frontend
         
-        echo "Installing frontend dependencies..."
-        npm install
+  #       echo "Installing frontend dependencies..."
+  #       npm install
         
-        # Expose port 3000 publicly
-        echo "Exposing port 3000..."
-        gitpod environment port open 3000 --name "Frontend" --protocol http --dont-wait
+  #       # Expose port 3000 publicly
+  #       echo "Exposing port 3000..."
+  #       gitpod environment port open 3000 --name "Frontend" --protocol http --dont-wait
         
-        echo "Starting frontend dev server..."
-        npm run dev
+  #       echo "Starting frontend dev server..."
+  #       npm run dev
       
-      ready: |
-        # Check if frontend dev server is responding
-        curl -f -s http://localhost:3000 > /dev/null
+  #     ready: |
+  #       # Check if frontend dev server is responding
+  #       curl -f -s http://localhost:3000 > /dev/null
       
-      stop: |
-        # Close the exposed port
-        gitpod environment port close 3000 || true
-        # Stop frontend dev server (npm run dev runs in foreground, will be killed by automation)
-        echo "Frontend dev server stopped"
+  #     stop: |
+  #       # Close the exposed port
+  #       gitpod environment port close 3000 || true
+  #       # Stop frontend dev server (npm run dev runs in foreground, will be killed by automation)
+  #       echo "Frontend dev server stopped"
