@@ -23,10 +23,6 @@ services:
         # Check if backend API is responding
         curl -f -s http://localhost:3001/api/health > /dev/null
       
-      stop: |
-        # Stop backend API (npm start runs in foreground, will be killed by automation)
-        echo "Backend API stopped"
-
   frontend:
     name: Frontend Dev Server
     description: React + Vite development server
