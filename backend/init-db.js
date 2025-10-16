@@ -1,87 +1,92 @@
-const { Client } = require('pg');
+const Database = require('better-sqlite3');
+const path = require('path');
 
-const client = new Client({
-  host: 'localhost',
-  port: 5432,
-  database: 'portfolio_db',
-  user: 'postgres'
-});
+const dbPath = path.join(__dirname, 'portfolio.db');
+const db = new Database(dbPath);
 
-async function initDatabase() {
+function initDatabase() {
   try {
-    await client.connect();
-    console.log('Connected to PostgreSQL');
+    console.log('Initializing SQLite database...');
+
+    // Enable foreign keys
+    db.pragma('foreign_keys = ON');
 
     // Create tables
-    await client.query(`
+    db.exec(`
       CREATE TABLE IF NOT EXISTS portfolios (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
         description TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       );
     `);
 
-    await client.query(`
+    db.exec(`
       CREATE TABLE IF NOT EXISTS stocks (
-        id SERIAL PRIMARY KEY,
-        symbol VARCHAR(10) NOT NULL UNIQUE,
-        name VARCHAR(255) NOT NULL,
-        current_price DECIMAL(10, 2) NOT NULL,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        symbol TEXT NOT NULL UNIQUE,
+        name TEXT NOT NULL,
+        current_price REAL NOT NULL,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       );
     `);
 
-    await client.query(`
+    db.exec(`
       CREATE TABLE IF NOT EXISTS transactions (
-        id SERIAL PRIMARY KEY,
-        portfolio_id INTEGER REFERENCES portfolios(id) ON DELETE CASCADE,
-        stock_id INTEGER REFERENCES stocks(id) ON DELETE CASCADE,
-        transaction_type VARCHAR(10) NOT NULL CHECK (transaction_type IN ('BUY', 'SELL')),
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        portfolio_id INTEGER NOT NULL,
+        stock_id INTEGER NOT NULL,
+        transaction_type TEXT NOT NULL CHECK (transaction_type IN ('BUY', 'SELL')),
         quantity INTEGER NOT NULL,
-        price_per_share DECIMAL(10, 2) NOT NULL,
-        transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        price_per_share REAL NOT NULL,
+        transaction_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (portfolio_id) REFERENCES portfolios(id) ON DELETE CASCADE,
+        FOREIGN KEY (stock_id) REFERENCES stocks(id) ON DELETE CASCADE
       );
     `);
 
-    await client.query(`
+    db.exec(`
       CREATE TABLE IF NOT EXISTS holdings (
-        id SERIAL PRIMARY KEY,
-        portfolio_id INTEGER REFERENCES portfolios(id) ON DELETE CASCADE,
-        stock_id INTEGER REFERENCES stocks(id) ON DELETE CASCADE,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        portfolio_id INTEGER NOT NULL,
+        stock_id INTEGER NOT NULL,
         quantity INTEGER NOT NULL DEFAULT 0,
-        average_cost DECIMAL(10, 2) NOT NULL DEFAULT 0,
-        UNIQUE(portfolio_id, stock_id)
+        average_cost REAL NOT NULL DEFAULT 0,
+        UNIQUE(portfolio_id, stock_id),
+        FOREIGN KEY (portfolio_id) REFERENCES portfolios(id) ON DELETE CASCADE,
+        FOREIGN KEY (stock_id) REFERENCES stocks(id) ON DELETE CASCADE
       );
     `);
 
-    console.log('Database tables created successfully');
+    console.log('✅ Database tables created successfully');
 
     // Insert sample data
-    const portfolioResult = await client.query(`
-      INSERT INTO portfolios (name, description)
-      VALUES ('My Portfolio', 'Personal investment portfolio')
-      ON CONFLICT DO NOTHING
-      RETURNING id;
+    const insertPortfolio = db.prepare(`
+      INSERT OR IGNORE INTO portfolios (name, description)
+      VALUES (?, ?)
+    `);
+    
+    insertPortfolio.run('My Portfolio', 'Personal investment portfolio');
+
+    const insertStock = db.prepare(`
+      INSERT OR IGNORE INTO stocks (symbol, name, current_price)
+      VALUES (?, ?, ?)
     `);
 
-    await client.query(`
-      INSERT INTO stocks (symbol, name, current_price)
-      VALUES 
-        ('AAPL', 'Apple Inc.', 178.50),
-        ('GOOGL', 'Alphabet Inc.', 142.30),
-        ('MSFT', 'Microsoft Corporation', 378.90),
-        ('AMZN', 'Amazon.com Inc.', 145.20),
-        ('TSLA', 'Tesla Inc.', 242.80)
-      ON CONFLICT (symbol) DO NOTHING;
-    `);
+    insertStock.run('AAPL', 'Apple Inc.', 178.50);
+    insertStock.run('GOOGL', 'Alphabet Inc.', 142.30);
+    insertStock.run('MSFT', 'Microsoft Corporation', 378.90);
+    insertStock.run('AMZN', 'Amazon.com Inc.', 145.20);
+    insertStock.run('TSLA', 'Tesla Inc.', 242.80);
 
-    console.log('Sample data inserted successfully');
+    console.log('✅ Sample data inserted successfully');
+    console.log(`✅ Database initialized at: ${dbPath}`);
 
   } catch (err) {
-    console.error('Database initialization error:', err);
+    console.error('❌ Database initialization error:', err);
+    process.exit(1);
   } finally {
-    await client.end();
+    db.close();
   }
 }
 
