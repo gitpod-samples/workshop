@@ -8,9 +8,8 @@ services:
       start: |
         cd /workspaces/workshop/backend
         
-        # Wait for dependencies to be installed
-        echo "Waiting for dependencies..."
-        timeout 300 bash -c 'until [ -f /tmp/dependencies-installed ]; do sleep 2; done' || exit 1
+        echo "Installing backend dependencies..."
+        npm install
         
         # Initialize SQLite database
         echo "Initializing SQLite database..."
@@ -23,49 +22,31 @@ services:
         # Check if backend API is responding
         curl -f -s http://localhost:3001/api/health > /dev/null
       
-  # frontend:
-  #   name: Frontend Dev Server
-  #   description: React + Vite development server
-  #   triggeredBy:
-  #     - postDevcontainerStart
-  #   commands:
-  #     start: |
-  #       cd /workspaces/workshop/frontend
-        
-  #       # Wait for dependencies to be installed
-  #       echo "Waiting for dependencies..."
-  #       timeout 300 bash -c 'until [ -f /tmp/dependencies-installed ]; do sleep 2; done' || exit 1
-        
-  #       # Expose port 3000 publicly
-  #       echo "Exposing port 3000..."
-  #       gitpod environment port open 3000 --name "Frontend" --protocol http --dont-wait
-        
-  #       echo "Starting frontend dev server..."
-  #       npm run dev
-      
-  #     ready: |
-  #       # Check if frontend dev server is responding
-  #       curl -f -s http://localhost:3000 > /dev/null
-      
-  #     stop: |
-  #       # Close the exposed port
-  #       gitpod environment port close 3000 || true
-  #       # Stop frontend dev server (npm run dev runs in foreground, will be killed by automation)
-  #       echo "Frontend dev server stopped"
-
-tasks:
-  install-dependencies:
-    name: Install Dependencies
-    description: Install npm dependencies for backend and frontend
+  frontend:
+    name: Frontend Dev Server
+    description: React + Vite development server
     triggeredBy:
       - postDevcontainerStart
-      - manual
-    command: |
-      bash -l -c '
-        echo "Installing backend dependencies..."
-        cd /workspaces/workshop/backend && npm install
+    commands:
+      start: |
+        cd /workspaces/workshop/frontend
+        
         echo "Installing frontend dependencies..."
-        cd /workspaces/workshop/frontend && npm install
-        echo "✅ All dependencies installed"
-        touch /tmp/dependencies-installed
-      '
+        npm install
+        
+        # Expose port 3000 publicly
+        echo "Exposing port 3000..."
+        gitpod environment port open 3000 --name "Frontend" --protocol http --dont-wait
+        
+        echo "Starting frontend dev server..."
+        npm run dev
+      
+      ready: |
+        # Check if frontend dev server is responding
+        curl -f -s http://localhost:3000 > /dev/null
+      
+      stop: |
+        # Close the exposed port
+        gitpod environment port close 3000 || true
+        # Stop frontend dev server (npm run dev runs in foreground, will be killed by automation)
+        echo "Frontend dev server stopped"
