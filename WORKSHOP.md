@@ -23,6 +23,7 @@ Portfolio Manager is a finance/equity application that allows users to:
 Also ensure that the following extensions are upgraded to the latest versions: 
    - [Microsoft: Remote - SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh)
    - [Ona.com](https://marketplace.visualstudio.com/items?itemName=gitpod.gitpod-flex)
+2. Optional but recommended: Install [Ona Brwoser extension](https://ona.com/docs/ona/integrations/browser-extension#browser-extension) for easier opening git repositories directly from GitHub, GitLab and BitBucket.
 
 ## Exercise 1: Open and Explore the Development Environment
 
