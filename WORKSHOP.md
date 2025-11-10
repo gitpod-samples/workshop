@@ -1,6 +1,6 @@
 # Portfolio Manager Workshop
 
-Welcome to the Portfolio Manager Workshop! This hands-on workshop will guide you through using Gitpod to develop, modify, and deploy a full-stack web application.
+Welcome to the Portfolio Manager Workshop! This hands-on workshop will guide you through using Ona to develop, modify, and deploy a full-stack web application.
 
 ## About the Application
 
@@ -13,9 +13,16 @@ Portfolio Manager is a finance/equity application that allows users to:
 **Tech Stack:**
 - **Frontend:** React with Vite
 - **Backend:** Node.js with Express
-- **Database:** SQLite (better-sqlite3)
+- **Database:** JSON
 
 ---
+
+## Prerequisite: Setup
+
+1. If you use VS Code Desktop, please updeate VS Code to the latest version. 
+Also ensure that the following extensions are upgraded to the latest versions: 
+   - [Microsoft: Remote - SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh)
+   - [Ona.com](https://marketplace.visualstudio.com/items?itemName=gitpod.gitpod-flex)
 
 ## Exercise 1: Open and Explore the Development Environment
 
@@ -25,7 +32,7 @@ Portfolio Manager is a finance/equity application that allows users to:
 
 #### 1.1 Open the Environment in Ona
 
-1. Open an environment for the `https://github.com/gitpod-samples/workshop` repo by: Navigating to `projects` in the nav bar, then opening an environment for the `ona workshop` project
+1. Open an environment for the `https://github.com/gitpod-samples/workshop` repo by: Navigating to `projects` in the nav bar, then opening an environment for the `ona workshop` project. If there is no project, feel free to create a project under `/projects`, or proceed without a project my clicking in "new Environment" -> "from URL" and pasting the repos' URL.
 2. Wait for the environment to initialize. This may take 2-3 minutes on first launch as it:
    - Builds the dev container
    - Installs Node.js dependencies via Ona automations
