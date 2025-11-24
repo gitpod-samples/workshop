@@ -1,0 +1,58 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  # Automatically derived from repository name
+  name: workshop
+  
+  # Based on README and repository purpose analysis
+  description: Educational full-stack portfolio management application for learning Gitpod and dev containers.
+  
+  # Technology stack and categorization
+  # - javascript: Primary language (Node.js + React)
+  # - website: Full-stack web application with frontend interface
+  # - internal: Educational/training resource for internal use
+  # - education: Primary purpose is developer training
+  tags:
+    - javascript
+    - website
+    - internal
+    - education
+    - react
+    - nodejs
+    - vite
+    - express
+  
+  # Relevant links for the component
+  links:
+    - url: https://github.com/gitpod-samples/workshop
+      title: GitHub Repository
+    - url: https://github.com/gitpod-samples/workshop/blob/main/WORKSHOP.md
+      title: Workshop Guide
+  
+  # Machine-readable metadata for tooling integration
+  annotations:
+    # Automatically derived from git remote
+    github.com/project-slug: gitpod-samples/workshop
+
+spec:
+  # Component type: website (full-stack web application with React frontend)
+  # This is a complete web application rather than a standalone API service
+  type: website
+  
+  # Lifecycle: production (actively maintained, used in workshops)
+  # Last commit: November 10, 2025 - actively maintained
+  # Used for production workshop delivery
+  lifecycle: production
+  
+  # TODO: Specify the team responsible for maintaining this component
+  # Format: team:team-name
+  # Examples: team:developer-experience, team:education, team:platform-engineering
+  # Contact Platform Engineering if your team is not yet defined in Backstage
+  owner: team:REPLACE_WITH_TEAM_NAME
+  
+  # TODO: Specify the larger system or product area (optional for websites)
+  # Format: system-name
+  # Examples: developer-education, training-platform, gitpod-samples
+  # This field is optional for website components but recommended for discoverability
+  # Contact Platform Engineering to create a new system if needed
+  # system: REPLACE_WITH_SYSTEM_NAME
