@@ -1,0 +1,33 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: workshop
+  description: Full-stack portfolio manager workshop for learning Gitpod and dev containers.
+  tags:
+    # Primary language
+    - javascript
+    # Component category
+    - documentation
+    # Visibility
+    - internal
+    # Additional technology tags
+    - react
+    - nodejs
+    - express
+    - vite
+    - devcontainer
+    - workshop
+  links:
+    - url: https://github.com/gitpod-samples/workshop
+      title: GitHub Repository
+  annotations:
+    github.com/project-slug: gitpod-samples/workshop
+spec:
+  type: documentation
+  # Actively maintained workshop with recent commits (Nov 2025)
+  lifecycle: production
+  # TODO: Replace with your team identifier from the org structure
+  # Format: team:team-name (e.g., team:developer-experience, team:platform-engineering)
+  # Contact Platform Engineering if your team is not yet defined in Backstage
+  owner: team:REPLACE_WITH_TEAM_NAME
+  # Note: spec.system is not required for documentation type components
