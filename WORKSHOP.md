@@ -19,11 +19,11 @@ Portfolio Manager is a finance/equity application that allows users to:
 
 ## Prerequisite: Setup
 
-1. If you use VS Code Desktop, please updeate VS Code to the latest version. 
+1. If you use VS Code Desktop, please update VS Code to the latest version. 
 Also ensure that the following extensions are upgraded to the latest versions: 
    - [Microsoft: Remote - SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh)
    - [Ona.com](https://marketplace.visualstudio.com/items?itemName=gitpod.gitpod-flex)
-2. Optional but recommended: Install [Ona Brwoser extension](https://ona.com/docs/ona/integrations/browser-extension#browser-extension) for easier opening git repositories directly from GitHub, GitLab and BitBucket.
+2. Optional but recommended: Install [Ona Browser extension](https://ona.com/docs/ona/integrations/browser-extension#browser-extension) for easier opening of git repositories directly from GitHub, GitLab and Bitbucket.
 
 ## Exercise 1: Open and Explore the Development Environment
 
@@ -33,7 +33,7 @@ Also ensure that the following extensions are upgraded to the latest versions:
 
 #### 1.1 Open the Environment in Ona
 
-1. Open an environment for the `https://github.com/gitpod-samples/workshop` repo by: Navigating to `projects` in the nav bar, then opening an environment for the `ona workshop` project. If there is no project, feel free to create a project under `/projects`, or proceed without a project my clicking in "new Environment" -> "from URL" and pasting the repos' URL.
+1. Open an environment for the `https://github.com/gitpod-samples/workshop` repo by: Navigating to `projects` in the nav bar, then opening an environment for the `ona workshop` project. If there is no project, feel free to create a project under `/projects`, or proceed without a project by clicking "new Environment" -> "from URL" and pasting the repo's URL.
 2. Wait for the environment to initialize. This may take 2-3 minutes on first launch as it:
    - Builds the dev container
    - Installs Node.js dependencies via Ona automations
